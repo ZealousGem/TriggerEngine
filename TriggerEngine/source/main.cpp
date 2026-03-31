@@ -62,15 +62,20 @@ int main()
 		return -1;
 	}
 
+
 	// tells compiler to use opengl version 3.3 core profile
 	// declares a vertex shader that takes in a vec3 attribute called aPos, which represents the position of a vertex in 3D space
 	// main function converges the 3D position of the vertex to a 4D homogeneous coordinate by adding a fourth component with a value of 1.0, which is necessary for rendering in OpenGL
 	string VertexShader = R"(
          #version 330 core 
          layout(location = 0) in vec3 aPos; 
+         layout(location = 1) in vec3 aColor;
+
+         out vec3 ourColor;
 
           void main()
 		 {
+			 ourColor = aColor;
 			 gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 		 }
     )";
@@ -91,13 +96,18 @@ int main()
 		cerr << "Error compiling vertex shader: " << infoLog << endl;
 	}
 
+
+
 	// declares a fragment shader that outputs a vec4 color value, which represents the color of a pixel on the screen
 	string FragmentShader = R"(
 		 #version 330 core 
 		 out vec4 FragColor; 
+
+         in vec3 ourColor;
+          
 		  void main()
 		 {
-			 FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+			 FragColor = vec4(ourColor, 1.0);
 		 }
 	)";
 
@@ -117,6 +127,7 @@ int main()
 		cerr << "Error compiling fragment shader: " << infoLog << endl;
 	}
 
+    
 	GLuint shadeprogram = glCreateProgram();
 	glAttachShader(shadeprogram, vertexShader);
 	glAttachShader(shadeprogram, fragmentShader);
@@ -135,9 +146,9 @@ int main()
 
 	// counter clock wise order of vertices, to render a triangle 
 	vector<float> vertices = {
-		  0.0f, 0.5f, 0.0f, // top
-		  -0.5f, -0.5f, 0.0f, // left
-		  0.5f, - 0.5f, 0.0f  // right
+		  0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // top
+		  -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // left
+		  0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // right
 	};
 	
 	GLuint vbo;
@@ -151,8 +162,11 @@ int main()
 	glBindVertexArray(vao); // binds the vertex array object, which allows you to store the state of vertex attribute configurations and buffer bindings
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); // binds the vertex buffer object to the GL_ARRAY_BUFFER target, which indicates that the buffer will be used for vertex attribute data
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0); // defines an array of vertex attribute data, where 0 is the index of the vertex attribute, 3 is the number of components per vertex attribute (in this case, x, y, z), GL_FLOAT is the data type of each component, false indicates that the data should not be normalized, 3 * sizeof(float) specifies the byte offset between consecutive vertex attributes (the stride), and (void*)0 indicates that the vertex attribute data starts at the beginning of the buffer
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)0); // defines an array of vertex attribute data, where 0 is the index of the vertex attribute, 3 is the number of components per vertex attribute (in this case, x, y, z), GL_FLOAT is the data type of each component, false indicates that the data should not be normalized, 3 * sizeof(float) specifies the byte offset between consecutive vertex attributes (the stride), and (void*)0 indicates that the vertex attribute data starts at the beginning of the buffer
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)(3 * sizeof(float))); // defines an array of vertex attribute data for the color attribute, where 1 is the index of the vertex attribute, 3 is the number of components per vertex attribute (in this case, r, g, b), GL_FLOAT is the data type of each component, false indicates that the data should not be normalized, 6 * sizeof(float) specifies the byte offset between consecutive vertex attributes (the stride), and (void*)(3 * sizeof(float)) indicates that the vertex attribute data starts at an offset of 3 floats from the beginning of the buffer (after the position data)
+	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

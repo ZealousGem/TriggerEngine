@@ -99,15 +99,17 @@ int main()
 
 
 	// declares a fragment shader that outputs a vec4 color value, which represents the color of a pixel on the screen
+	//fragment shader takes in a vec3 input called ourColor, which is passed from the vertex shader, and sets the output color of the fragment to a vec4 with the RGB values from ourColor and an alpha value of 1.0 (fully opaque)
 	string FragmentShader = R"(
 		 #version 330 core 
 		 out vec4 FragColor; 
 
          in vec3 ourColor;
+         uniform vec4 uColor;
           
 		  void main()
 		 {
-			 FragColor = vec4(ourColor, 1.0);
+			 FragColor = vec4(ourColor, 1.0) * uColor;
 		 }
 	)";
 
@@ -150,17 +152,41 @@ int main()
 		  -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // left
 		  0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // right
 	};
-	
+
+	// counter clock wise order of vertices, to render a triangle 
+	vector<float> Rectvertices = {
+		  0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // top right
+		  -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // top left
+		  -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  // bottom left
+		  0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f // bottom right
+	};
+
+	vector<unsigned int> indices = { // defines the order in which the vertices of the rectangle should be drawn, where
+		0, 1, 2, // first triangle
+		0, 2, 3  // second triangle
+	};
+
+	// element buffer object (EBO) - is a buffer object that stores the indices of the vertices to be drawn, which allows for efficient reuse of vertex data and reduces the amount of data that needs to be sent to the GPU
+	// vbo - is a buffer object that stores vertex data, such as positions, colors, normals, etc., which can be used for rendering in OpenGL
+	//vao - is a vertex array object that stores the state of vertex attribute configurations and buffer bindings, which allows for efficient switching between different vertex data and attribute configurations during rendering
 	GLuint vbo;
 	glGenBuffers(1, &vbo); // generates a buffer object and returns its ID, which can be used to reference the buffer in subsequent OpenGL calls
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); // binds the buffer object to the GL_ARRAY_BUFFER target, which indicates that the buffer will be used for vertex attribute data
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW); // creates and initializes the buffer object's data store with the vertex data, where GL_ARRAY_BUFFER is the target to which the buffer is bound, vertices.size() * sizeof(float) specifies the size of the data in bytes, vertices.data() is a pointer to the vertex data, and GL_STATIC_DRAW indicates that the data will be used for drawing and will not be modified frequently
+	glBufferData(GL_ARRAY_BUFFER, Rectvertices.size() * sizeof(float), Rectvertices.data(), GL_STATIC_DRAW); // creates and initializes the buffer object's data store with the vertex data, where GL_ARRAY_BUFFER is the target to which the buffer is bound, vertices.size() * sizeof(float) specifies the size of the data in bytes, vertices.data() is a pointer to the vertex data, and GL_STATIC_DRAW indicates that the data will be used for drawing and will not be modified frequently
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	GLuint ebo;
+	glGenBuffers(1, &ebo); // generates a buffer object for the element buffer and returns its ID
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo); // binds the element buffer object to the GL_ELEMENT_ARRAY_BUFFER target, which indicates that the buffer will be used for index data
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	
 
 	GLuint vao; // generates a vertex array object and returns its ID, which can be used to reference the vertex array in subsequent OpenGL calls
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao); // binds the vertex array object, which allows you to store the state of vertex attribute configurations and buffer bindings
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); // binds the vertex buffer object to the GL_ARRAY_BUFFER target, which indicates that the buffer will be used for vertex attribute data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)0); // defines an array of vertex attribute data, where 0 is the index of the vertex attribute, 3 is the number of components per vertex attribute (in this case, x, y, z), GL_FLOAT is the data type of each component, false indicates that the data should not be normalized, 3 * sizeof(float) specifies the byte offset between consecutive vertex attributes (the stride), and (void*)0 indicates that the vertex attribute data starts at the beginning of the buffer
 	glEnableVertexAttribArray(0);
@@ -171,6 +197,9 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+
+	GLint uColorLoc = glGetUniformLocation(shadeprogram, "uColor");
+
 	while (!glfwWindowShouldClose(window))
 	{
 
@@ -180,8 +209,11 @@ int main()
 	  glClear(GL_COLOR_BUFFER_BIT);
 
 	  glUseProgram(shadeprogram);
+	  glUniform4f(uColorLoc, 0.0f, 1.0f, 0.0f, 1.0f);
 	  glBindVertexArray(vao);
-	  glDrawArrays(GL_TRIANGLES, 0, 3); // renders primitives from array data, where GL_TRIANGLES specifies the mode (in this case, triangles), 0 is the starting index in the enabled arrays, and 3 is the number of vertices to be rendered (in this case, one triangle)
+	//  glDrawArrays(GL_TRIANGLES, 0, 3); // renders primitives from array data, where GL_TRIANGLES specifies the mode (in this case, triangles), 0 is the starting index in the enabled arrays, and 3 is the number of vertices to be rendered (in this case, one triangle)
+	  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
 	  // font buffer
 	  glfwSwapBuffers(window);

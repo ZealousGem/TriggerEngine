@@ -10,6 +10,44 @@
 
 using namespace std;
 
+// vec2 - is a structure that represents a 2D vector with two float components, x and y, which can be used to store and manipulate 2D positions, directions, or other 2D data in graphics programming
+struct Vec2{
+	float x = 0.0f;
+	float y = 0.0f;
+};;
+
+Vec2 offset;
+
+// callback function that is called when a key event occurs, where window is a pointer to the GLFW window that received the event, key is the keyboard key that was pressed or released, scancode is the platform-specific scancode of the key, action is the type of action (press, release, or repeat), and mods is a bitfield of modifier keys (such as Shift, Control, Alt) that were active during the event
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS) 
+	{
+		switch (key)
+		{
+		case GLFW_KEY_UP: 
+			offset.y += 0.01f;
+			cout << "Up key pressed" << endl;
+		break;
+		case GLFW_KEY_DOWN: 
+			offset.y -= 0.01f;
+			cout << "Down key pressed" << endl;
+			break;
+		case GLFW_KEY_RIGHT:
+			offset.x += 0.01f;
+			cout << "Right key pressed" << endl;
+			break;
+		case GLFW_KEY_LEFT:
+			offset.x -= 0.01f;
+			cout << "Left key pressed" << endl;
+			break;
+		default:
+			break;
+		}
+	}
+		//glfwSetWindowShouldClose(window, true);
+}
+
 // Double Buffering - is an api technique that prevents visual flickering and artifacts during rendering
 
 // front buffer - is the buffer that is currently being displayed on the screen
@@ -46,6 +84,11 @@ int main()
 
 	}
 
+	// key events 
+
+	glfwSetKeyCallback(window, keyCallback);
+
+
 	//runs on second monitor
 	//glfwSetWindowPos(window, 2000, 150);
 
@@ -71,12 +114,14 @@ int main()
          layout(location = 0) in vec3 aPos; 
          layout(location = 1) in vec3 aColor;
 
+		 uniform vec2 uOffset;
+
          out vec3 ourColor;
 
           void main()
 		 {
 			 ourColor = aColor;
-			 gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+			 gl_Position = vec4(aPos.x + uOffset.x, aPos.y + uOffset.y, aPos.z, 1.0);
 		 }
     )";
 
@@ -199,6 +244,8 @@ int main()
 
 
 	GLint uColorLoc = glGetUniformLocation(shadeprogram, "uColor");
+	GLint uOffestLoc = glGetUniformLocation(shadeprogram, "uOffset");
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -210,6 +257,7 @@ int main()
 
 	  glUseProgram(shadeprogram);
 	  glUniform4f(uColorLoc, 0.0f, 1.0f, 0.0f, 1.0f);
+	  glUniform2f(uOffestLoc, offset.x, offset.y);
 	  glBindVertexArray(vao);
 	//  glDrawArrays(GL_TRIANGLES, 0, 3); // renders primitives from array data, where GL_TRIANGLES specifies the mode (in this case, triangles), 0 is the starting index in the enabled arrays, and 3 is the number of vertices to be rendered (in this case, one triangle)
 	  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

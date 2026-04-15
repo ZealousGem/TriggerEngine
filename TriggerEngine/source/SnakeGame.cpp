@@ -1,3 +1,4 @@
+
 #include "SnakeGame.h"
 using namespace std;
 
@@ -87,49 +88,49 @@ const int FONT_WIDTH = 5;
 const int FONT_HEIGHT = 5;
 const int FONT_SPACE = 1;
 
-map<char, vector<int>> fontMap = {
-	{' ', {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0}},
-    {'A', {0,1,1,0,0, 1,0,0,1,0, 1,1,1,1,0, 1,0,0,1,0, 1,0,0,1,0}},
-    {'B', {1,1,1,0,0, 1,0,0,1,0, 1,1,1,0,0, 1,0,0,1,0, 1,1,1,0,0}},
-    {'C', {0,1,1,1,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 0,1,1,1,0}},
-    {'D', {1,1,1,0,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 1,1,1,0,0}},
-    {'E', {1,1,1,1,0, 1,0,0,0,0, 1,1,1,0,0, 1,0,0,0,0, 1,1,1,1,0}},
-    {'F', {1,1,1,1,0, 1,0,0,0,0, 1,1,1,0,0, 1,0,0,0,0, 1,0,0,0,0}},
-    {'G', {0,1,1,1,0, 1,0,0,0,0, 1,0,1,1,0, 1,0,0,1,0, 0,1,1,1,0}},
-    {'H', {1,0,0,1,0, 1,0,0,1,0, 1,1,1,1,0, 1,0,0,1,0, 1,0,0,1,0}},
-    {'I', {1,1,1,0,0, 0,1,0,0,0, 0,1,0,0,0, 0,1,0,0,0, 1,1,1,0,0}},
-    {'J', {0,0,1,1,0, 0,0,0,1,0, 0,0,0,1,0, 1,0,0,1,0, 0,1,1,0,0}},
-    {'K', {1,0,0,1,0, 1,0,1,0,0, 1,1,0,0,0, 1,0,1,0,0, 1,0,0,1,0}},
-    {'L', {1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,0}},
-    {'M', {1,0,0,0,1, 1,1,0,1,1, 1,0,1,0,1, 1,0,0,0,1, 1,0,0,0,1}},
-    {'N', {1,0,0,0,1, 1,1,0,0,1, 1,0,1,0,1, 1,0,0,1,1, 1,0,0,0,1}},
-    {'O', {0,1,1,0,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 0,1,1,0,0}},
-    {'P', {1,1,1,0,0, 1,0,0,1,0, 1,1,1,0,0, 1,0,0,0,0, 1,0,0,0,0}},
-    {'Q', {0,1,1,0,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,1,0,0, 0,1,0,1,0}},
-    {'R', {1,1,1,0,0, 1,0,0,1,0, 1,1,1,0,0, 1,0,1,0,0, 1,0,0,1,0}},
-    {'S', {0,1,1,1,0, 1,0,0,0,0, 0,1,1,0,0, 0,0,0,1,0, 1,1,1,0,0}},
-    {'T', {1,1,1,1,1, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0}},
-    {'U', {1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 0,1,1,0,0}},
-    {'V', {1,0,0,0,1, 1,0,0,0,1, 0,1,0,1,0, 0,1,0,1,0, 0,0,1,0,0}},
-    {'W', {1,0,0,0,1, 1,0,0,0,1, 1,0,1,0,1, 1,0,1,0,1, 0,1,0,1,0}},
-    {'X', {1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,1,0,1,0, 1,0,0,0,1}},
-    {'Y', {1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0}},
-    {'Z', {1,1,1,1,1, 0,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 1,1,1,1,1}},
-    {'0', {0,1,1,0,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 0,1,1,0,0}},
-    {'1', {0,0,1,0,0, 0,1,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,1,1,1,0}},
-    {'2', {0,1,1,0,0, 1,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 1,1,1,1,0}},
-    {'3', {1,1,1,0,0, 0,0,0,1,0, 0,1,1,0,0, 0,0,0,1,0, 1,1,1,0,0}},
-    {'4', {0,0,1,1,0, 0,1,0,1,0, 1,0,0,1,0, 1,1,1,1,1, 0,0,0,1,0}},
-    {'5', {1,1,1,1,0, 1,0,0,0,0, 1,1,1,0,0, 0,0,0,1,0, 1,1,1,0,0}},
-    {'6', {0,1,1,0,0, 1,0,0,0,0, 1,1,1,0,0, 1,0,0,1,0, 0,1,1,0,0}},
-    {'7', {1,1,1,1,0, 0,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 1,0,0,0,0}},
-    {'8', {0,1,1,0,0, 1,0,0,1,0, 0,1,1,0,0, 1,0,0,1,0, 0,1,1,0,0}},
-    {'9', {0,1,1,0,0, 1,0,0,1,0, 0,1,1,1,0, 0,0,0,1,0, 0,1,1,0,0}},
-    {':', {0,0,0,0,0, 0,0,1,0,0, 0,0,0,0,0, 0,0,1,0,0, 0,0,0,0,0}},
-    {'-', {0,0,0,0,0, 0,0,0,0,0, 1,1,1,1,0, 0,0,0,0,0, 0,0,0,0,0}},
-    {'.', {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,1,0,0}}
-    
-	
+map<char, array<int, FONT_WIDTH* FONT_HEIGHT>> fontMap = {
+    {' ', {{0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0}}},
+    {'A', {{0,1,1,0,0, 1,0,0,1,0, 1,1,1,1,0, 1,0,0,1,0, 1,0,0,1,0}}},
+    {'B', {{1,1,1,0,0, 1,0,0,1,0, 1,1,1,0,0, 1,0,0,1,0, 1,1,1,0,0}}},
+    {'C', {{0,1,1,1,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 0,1,1,1,0}}},
+    {'D', {{1,1,1,0,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 1,1,1,0,0}}},
+    {'E', {{1,1,1,1,0, 1,0,0,0,0, 1,1,1,0,0, 1,0,0,0,0, 1,1,1,1,0}}},
+    {'F', {{1,1,1,1,0, 1,0,0,0,0, 1,1,1,0,0, 1,0,0,0,0, 1,0,0,0,0}}},
+    {'G', {{0,1,1,1,0, 1,0,0,0,0, 1,0,1,1,0, 1,0,0,1,0, 0,1,1,1,0}}},
+    {'H', {{1,0,0,1,0, 1,0,0,1,0, 1,1,1,1,0, 1,0,0,1,0, 1,0,0,1,0}}},
+    {'I', {{1,1,1,0,0, 0,1,0,0,0, 0,1,0,0,0, 0,1,0,0,0, 1,1,1,0,0}}},
+    {'J', {{0,0,1,1,0, 0,0,0,1,0, 0,0,0,1,0, 1,0,0,1,0, 0,1,1,0,0}}},
+    {'K', {{1,0,0,1,0, 1,0,1,0,0, 1,1,0,0,0, 1,0,1,0,0, 1,0,0,1,0}}},
+    {'L', {{1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,0}}},
+    {'M', {{1,0,0,0,1, 1,1,0,1,1, 1,0,1,0,1, 1,0,0,0,1, 1,0,0,0,1}}},
+    {'N', {{1,0,0,0,1, 1,1,0,0,1, 1,0,1,0,1, 1,0,0,1,1, 1,0,0,0,1}}},
+    {'O', {{0,1,1,0,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 0,1,1,0,0}}},
+    {'P', {{1,1,1,0,0, 1,0,0,1,0, 1,1,1,0,0, 1,0,0,0,0, 1,0,0,0,0}}},
+    {'Q', {{0,1,1,0,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,1,0,0, 0,1,0,1,0}}},
+    {'R', {{1,1,1,0,0, 1,0,0,1,0, 1,1,1,0,0, 1,0,1,0,0, 1,0,0,1,0}}},
+    {'S', {{0,1,1,1,0, 1,0,0,0,0, 0,1,1,0,0, 0,0,0,1,0, 1,1,1,0,0}}},
+    {'T', {{1,1,1,1,1, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0}}},
+    {'U', {{1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 0,1,1,0,0}}},
+    {'V', {{1,0,0,0,1, 1,0,0,0,1, 0,1,0,1,0, 0,1,0,1,0, 0,0,1,0,0}}},
+    {'W', {{1,0,0,0,1, 1,0,0,0,1, 1,0,1,0,1, 1,0,1,0,1, 0,1,0,1,0}}},
+    {'X', {{1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,1,0,1,0, 1,0,0,0,1}}},
+    {'Y', {{1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0}}},
+    {'Z', {{1,1,1,1,1, 0,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 1,1,1,1,1}}},
+    {'0', {{0,1,1,0,0, 1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 0,1,1,0,0}}},
+    {'1', {{0,0,1,0,0, 0,1,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,1,1,1,0}}},
+    {'2', {{0,1,1,0,0, 1,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 1,1,1,1,0}}},
+    {'3', {{1,1,1,0,0, 0,0,0,1,0, 0,1,1,0,0, 0,0,0,1,0, 1,1,1,0,0}}},
+    {'4', {{0,0,1,1,0, 0,1,0,1,0, 1,0,0,1,0, 1,1,1,1,1, 0,0,0,1,0}}},
+    {'5', {{1,1,1,1,0, 1,0,0,0,0, 1,1,1,0,0, 0,0,0,1,0, 1,1,1,0,0}}},
+    {'6', {{0,1,1,0,0, 1,0,0,0,0, 1,1,1,0,0, 1,0,0,1,0, 0,1,1,0,0}}},
+    {'7', {{1,1,1,1,0, 0,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 1,0,0,0,0}}},
+    {'8', {{0,1,1,0,0, 1,0,0,1,0, 0,1,1,0,0, 1,0,0,1,0, 0,1,1,0,0}}},
+    {'9', {{0,1,1,0,0, 1,0,0,1,0, 0,1,1,1,0, 0,0,0,1,0, 0,1,1,0,0}}},
+    {':', {{0,0,0,0,0, 0,0,1,0,0, 0,0,0,0,0, 0,0,1,0,0, 0,0,0,0,0}}},
+    {'-', {{0,0,0,0,0, 0,0,0,0,0, 1,1,1,1,0, 0,0,0,0,0, 0,0,0,0,0}}},
+    {'.', {{0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,1,0,0}}}
+
+
 };
 
 void SpawnFruit();
@@ -287,7 +288,7 @@ int main()
 
 }
 
-void initGame() 
+void InitGame() 
 {
 	ResetGame();
 	SpawnFruit();
@@ -300,8 +301,52 @@ void ResetGame() // resets game state
     currentDirection = Dir::NONE;
     score = 0;
 	gameOver = false;
+    gameStarted = false;
 	timeSinceLastUpdate = 0.0f;
 	SnakeSpeed = Update_Interval;
+}
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+
+    if (action != GLFW_PRESS) return;
+
+    if (!gameStarted && key != GLFW_KEY_R)
+    {
+        gameStarted = true;
+		currentDirection = Dir::RIGHT;
+        return;
+	}
+
+    if (gameOver && key != GLFW_KEY_R)
+    {
+		ResetGame();
+		SpawnFruit();
+        return;
+    }
+
+    if (gameOver && !gameStarted) return;
+
+    switch (key)
+    {
+    case GLFW_KEY_UP:
+        if (currentDirection != Dir::DOWN) currentDirection = Dir::UP;
+        break;
+    case GLFW_KEY_DOWN:
+        if (currentDirection != Dir::UP) currentDirection = Dir::DOWN;
+        break;
+    case GLFW_KEY_LEFT:
+        if (currentDirection != Dir::RIGHT) currentDirection = Dir::LEFT;
+        break;
+    case GLFW_KEY_RIGHT:
+        if (currentDirection != Dir::LEFT) currentDirection = Dir::RIGHT;
+        break;
+    default:
+        break;
+
+    }
+    
+
 }
 
 void SpawnFruit() // spawns fruit at random position on the grid that is not occupied by the snake's body, which is done by generating random x and y coordinates within the grid size and checking if they collide with any of the snake's body segments before placing the fruit
@@ -428,6 +473,166 @@ void RenderGame(GLFWwindow* window)
     }
 
 	glBindVertexArray(0); // unbinds the vertex array object, which is a good practice to prevent accidental modifications to the vertex attribute configurations and buffer bindings in subsequent rendering calls, and ensures that the state of the vertex array is not unintentionally altered by other parts of the code
-    glfwDestroyWindow(window);
+    glfwSwapBuffers(window);
+
+}
+
+void DrawStartScreen()
+{
+    // Draws Snake and Fruit
+    DrawSnake();
+
+    // Draws Title
+    DrawText("SNAKE GAME", 0.0f, 0.3f, 0.025f, Vec3(0.2f, 0.8f, 0.3f));
+
+    // instructions
+    DrawText("USE ARROW KEYS TO MOVE", 0.0f, 0.0f, 0.012f, Vec3(0.9f, 0.8f, 0.3f));
+    DrawText("EAT THE RED FRUIT TO GROW", 0.0f, -0.1f, 0.012f, Vec3(0.9f, 0.8f, 0.3f));
+    DrawText("DONT TOUCH THE WALLS OR YOURSELF", 0.0f, -0.2f, 0.010f, Vec3(0.9f, 0.8f, 0.3f));
+    DrawText("PRESS ANY KEY TO START", 0.0f, -0.4f, 0.010f, Vec3(0.9f, 0.8f, 0.3f));
+
+}
+
+void DrawGameOver()
+{
+
+    DrawText("GAME OVER", 0.0f, 0.1f, 0.03f, Vec3(1.0f, 0.2f, 0.2f));
+    DrawText("SCORE: " + to_string(score), 0.0f, -0.05f, 0.02f, Vec3(1.0f, 0.8f, 0.2f));
+    DrawText("PRESS ANY KEY TO RESTART", 0.0f, -0.2f, 0.010f, Vec3(1.0f, 0.8f, 0.2f));
+}
+
+void DrawCell(const Vec2i& gridPos, const Vec3& color)
+{
+
+    // finds the centre grid position of the grid
+    Vec2 offset(-1.0f + gridPos.x * CELL_WIDTH + CELL_WIDTH * 0.5f, 
+        -1.0f + gridPos.y * CELL_HEIGHT + CELL_HEIGHT * 0.5f);
+
+	Vec2 scale(CELL_WIDTH * 0.9f, CELL_HEIGHT * 0.9f); // makes cell slightly smaller to create a gap between cells for better visibility
+
+	// draws Cell Rectangle
+    glUniform3f(uColorLoc, color.r, color.g, color.b);
+    glUniform2f(uOffsetLoc, offset.x, offset.y);
+    glUniform2f(uScaleLoc, scale.x, scale.y); 
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+}
+
+void DrawChar(char character, float x, float y, float scale, const Vec3& color)
+{
+
+    /*if (fontMap.size() != FONT_WIDTH * FONT_HEIGHT)
+    {
+        std::cerr << "Font data corrupted for char: " << character << std::endl;
+        return;
+    }*/
+	//character = toupper(character); // converts to uppercase
+	auto it = fontMap.find(character);
+
+    if (it == fontMap.end())
+    {
+        std::cerr << "Character not found: " << character << std::endl;
+		it = fontMap.find(' '); // if character not found, use space character
+    }
+
+	const array<int, 25>& bitmap = it->second; // retrieves the bitmap representation of the character from the fontMap
+
+    if (bitmap.size() != FONT_WIDTH * FONT_HEIGHT)
+    {
+        std::cerr << "Font data corrupted for char: " << character << std::endl;
+        return;
+    }
+
+	float charWidth = FONT_WIDTH * scale;
+	float charHeight = FONT_HEIGHT * scale;
+
+    for (int row = 0; row < FONT_HEIGHT; ++row)
+    {
+        for (int col = 0; col < FONT_WIDTH; ++col)
+        {
+            if (bitmap[row * FONT_WIDTH + col]) // 
+            {
+                Vec2 offset(x + col * scale - charWidth / 2.0f,
+                    y - row * scale + charHeight / 2.0f);
+
+                glUniform3f(uColorLoc, color.r, color.g, color.b);
+                glUniform2f(uOffsetLoc, offset.x, offset.y);
+                glUniform2f(uScaleLoc, scale, scale);
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            }
+        }
+    }
+}
+
+void DrawText(const string& text, float x, float y, float scale, const Vec3& color)
+{
+	float charWidth = FONT_WIDTH * scale + FONT_SPACE * scale;
+    
+	float totalWidth = text.size() * charWidth - FONT_SPACE * scale; // calculates the total width of the text string based on the number of characters, the width of each character, and the spacing between characters, which is used to center the text on the screen by adjusting the starting x position accordingly
+
+    float startX = x - totalWidth / 2.0f;
+
+    for (size_t i = 0; i < text.length(); ++i)
+    {
+        DrawChar(text[i], startX + i * charWidth, y, scale, color); // draws each character in the text string by calling the DrawChar function with the appropriate parameters for position, scale, and color
+    }
+}
+
+void DrawBorder() 
+{
+    Vec3 BorderColour(0.3f, 0.3f, 0.5f);
+
+    for (int x = 0; x < GRID_SIZE; ++x)
+    {
+        DrawCell(Vec2i(x, 0), BorderColour); // bottom border
+        DrawCell(Vec2i(x, GRID_HEIGHT - 1), BorderColour); // top border
+	}
+
+    for (int y = 0; y < GRID_HEIGHT; ++y)
+    {
+        DrawCell(Vec2i(0, y), BorderColour); // left border
+        DrawCell(Vec2i(GRID_SIZE - 1, y), BorderColour); // right border    
+    }
+
+    // grid lines
+	Vec3 gridColour(0.2f, 0.2f, 0.4f);
+    for (int x = 1; x < GRID_SIZE - 1; ++x)
+    {
+        for (int y = 1; y < GRID_HEIGHT - 1; ++y)
+        {
+            DrawCell(Vec2i(x, y), gridColour); // draws the inner grid cells with a different color to create a visual distinction between the borders and the playable area of the grid
+        }
+	}
+}
+
+void DrawSnake()
+{
+	Vec3 HeadColour(0.0f, 0.95f, 0.3f);
+	Vec3 bodyColour(0.0f, 0.7f, 0.1f);
+
+    // Draws Snake Body
+    for (size_t i = 0; i < snakeBody.size(); ++i) 
+    {
+        // gradient effect
+		float factor = static_cast<float>(i) / snakeBody.size();
+        Vec3 segementColour(bodyColour.r * (1.0f - factor) + 0.1f * factor,
+            bodyColour.g * (1.0f - factor) + 0.8f * factor,
+            bodyColour.b * (1.0f - factor));
+
+		DrawCell(snakeBody[i], segementColour);
+    }
+
+    DrawCell(snakeBody.front(), HeadColour);
+
+	Vec3 FruitColour(0.95f, 0.1f, 0.1f);
+
+    DrawCell(fruit, FruitColour);
+}
+
+void DrawScore()
+{
+
+	string scoreText = "SCORE: " + to_string(score);
+	DrawText(scoreText, 0.0f, 0.9f, 0.02f, Vec3(1.0f, 1.0f, 1.0f));
 
 }

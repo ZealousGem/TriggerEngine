@@ -10,6 +10,7 @@ add_executable(SnakeStandalone "source/SnakeGame.cpp" "source/SnakeGame.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET TriggerEngine PROPERTY CXX_STANDARD 20)
+  set_property(TARGET SnakeStandalone PROPERTY CXX_STANDARD 20)
 endif()
 
 # adding glfw libariy
@@ -24,7 +25,18 @@ include_directories(thirdparty/glew/include)
 set_property(TARGET glew_s PROPERTY FOLDER GLEW)
 set_property(TARGET glew   PROPERTY FOLDER GLEW)
 
-target_link_libraries(${PROJECT_NAME} 
+#
+#target_link_libraries(${PROJECT_NAME} 
+ #   glfw 
+  #  glew_s
+#)
+
+target_link_libraries(TriggerEngine 
+    glfw 
+    glew_s
+)
+
+target_link_libraries(SnakeStandalone 
     glfw 
     glew_s
 )

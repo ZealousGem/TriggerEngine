@@ -248,6 +248,186 @@ int main()
           0.5f, 0.5f  // top left
      };
 
+     glGenVertexArrays(1, &vao);
+     glGenBuffers(1, &vbo);
 
+     glBindVertexArray(vao);
+     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+     glEnableVertexAttribArray(0);
+
+     // starts game
+     InitGame();
+
+     // Game Loop 
+	 auto lastTime = chrono::high_resolution_clock::now(); // stores the current time point using the high-resolution clock, which provides a more precise measurement of time intervals compared to other clock types, and is used to calculate the delta time for updating the game state at a consistent rate
+     while (!glfwWindowShouldClose(window))
+     {
+         auto currentTime = chrono::high_resolution_clock::now();
+         float deltaTime = chrono::duration<float>(currentTime - lastTime).count();
+         lastTime = currentTime;
+
+         glfwPollEvents();
+
+        
+         UpdateGame(deltaTime);
+         RenderGame(window);
+      //   glfwSwapBuffers(window);
+        
+     }
+     
+     // clean up 
+     glDeleteVertexArrays(1, &vao);
+     glDeleteBuffers(1, &vbo);
+     glDeleteProgram(shadeprogram);
+     glfwTerminate();
+	 return 0;
+
+}
+
+void initGame() 
+{
+	ResetGame();
+	SpawnFruit();
+}
+
+void ResetGame() // resets game state 
+{
+
+    snakeBody = { Vec2i(5,10), Vec2i(4,10), Vec2i(3,10) };
+    currentDirection = Dir::NONE;
+    score = 0;
+	gameOver = false;
+	timeSinceLastUpdate = 0.0f;
+	SnakeSpeed = Update_Interval;
+}
+
+void SpawnFruit() // spawns fruit at random position on the grid that is not occupied by the snake's body, which is done by generating random x and y coordinates within the grid size and checking if they collide with any of the snake's body segments before placing the fruit
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(0, GRID_SIZE - 1);
+    while (true)
+    {
+        Vec2i potentialFruit(dis(gen), dis(gen));
+        bool collision = false;
+        for (const auto& segment : snakeBody)
+        {
+            if (segment == potentialFruit)
+            {
+                collision = true;
+                break;
+            }
+        }
+        if (!collision)
+        {
+            fruit = potentialFruit;
+            break;
+        }
+    }
+}
+
+void UpdateGame(float deltaTime) 
+{
+
+    if (!gameStarted && gameOver) return;
+    
+	timeSinceLastUpdate += deltaTime;
+
+	if (timeSinceLastUpdate >= SnakeSpeed) // checks if the accumulated time since the last update exceeds the defined SnakeSpeed, which determines how often the game state should be updated based on the player's speed and the defined update interval
+    {
+		timeSinceLastUpdate = 0.0f;
+
+		Vec2i newHead = snakeBody.front(); // creates a new head position for the snake based on the current direction of movement, which is determined by the currentDirection variable and updates the x or y coordinate accordingly to move the snake in the desired direction
+
+        switch (currentDirection)
+        {
+        case Dir::UP:
+            newHead.y += 1;
+            break;
+        case Dir::DOWN:
+            newHead.y -= 1;
+            break;
+        case Dir::LEFT:
+            newHead.x -= 1;
+            break;
+        case Dir::RIGHT:
+            newHead.x += 1;
+            break;
+        default:
+            return; // if the current direction is NONE, the function returns early without updating the game state, which means that the snake will not move until a valid direction is set
+		}
+
+        if (newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_HEIGHT) 
+        {
+            gameOver = true;
+            return;
+        }
+
+        // if snake hit its self 
+        for (const auto& segment : snakeBody)
+        {
+            if (segment == newHead)
+            {
+                gameOver = true;
+                return;
+            }
+        }
+
+        // adds head 
+		snakeBody.insert(snakeBody.begin(), newHead);
+
+        if (newHead == fruit) 
+        {
+            score += 10;
+			SpawnFruit();
+
+            if (score % 50 == 0 && SnakeSpeed > 0.05f)
+            {
+                SnakeSpeed -= 0.01f;
+            }
+        }
+
+        else
+        {
+			snakeBody.pop_back(); // removes the tail segment of the snake, which allows the snake to move forward without growing in length unless it has just eaten a fruit, in which case the tail is not removed and the snake grows by one segment
+        }
+    }
+
+}
+
+void RenderGame(GLFWwindow* window) 
+{
+
+    // back buffer
+    glClearColor(0.54f, 0.0f, 0.0f, 1.0f);
+    /// handles the colour of thw windw by rendering the coulr using opengl api
+    glClear(GL_COLOR_BUFFER_BIT);
+  
+    glUseProgram(shadeprogram);
+    glBindVertexArray(vao);
+
+	DrawBorder();
+
+    if(!gameStarted)
+    {
+		DrawStartScreen();
+    }
+
+    else if (gameOver) 
+    {
+		DrawGameOver();
+    }
+
+    else
+    {
+		DrawSnake();
+        DrawScore();
+    }
+
+	glBindVertexArray(0); // unbinds the vertex array object, which is a good practice to prevent accidental modifications to the vertex attribute configurations and buffer bindings in subsequent rendering calls, and ensures that the state of the vertex array is not unintentionally altered by other parts of the code
+    glfwDestroyWindow(window);
 
 }

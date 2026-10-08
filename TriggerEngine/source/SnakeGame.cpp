@@ -447,7 +447,7 @@ void RenderGame(GLFWwindow* window)
 {
 
     // back buffer
-    glClearColor(0.54f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
     /// handles the colour of thw windw by rendering the coulr using opengl api
     glClear(GL_COLOR_BUFFER_BIT);
   

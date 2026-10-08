@@ -3,14 +3,19 @@
 #
 
 # Add source to this project's executable.
-add_executable (TriggerEngine "source/main.cpp" "source/main.h")
+add_executable (TriggerEngine "source/main.cpp" "source/main.h" )
 
 # This creates a separate Snake Game program
 add_executable(SnakeStandalone "source/SnakeGame.cpp" "source/SnakeGame.h")
 
+# This creates a separate Mini Render Lab program
+add_executable(MiniRenderLab "source/MiniRenderLab.cpp" "source/MiniRenderLab.h")
+
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET TriggerEngine PROPERTY CXX_STANDARD 20)
   set_property(TARGET SnakeStandalone PROPERTY CXX_STANDARD 20)
+   set_property(TARGET MiniRenderLab PROPERTY CXX_STANDARD 20)
 endif()
 
 # adding glfw libariy
@@ -37,6 +42,10 @@ target_link_libraries(TriggerEngine
 )
 
 target_link_libraries(SnakeStandalone 
+    glfw 
+    glew_s
+)
+target_link_libraries(MiniRenderLab 
     glfw 
     glew_s
 )

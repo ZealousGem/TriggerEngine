@@ -16,6 +16,24 @@ Vec2 Offset;
 void keyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods)
 {
 	// Paste your keyboard processing code here
+	switch (key)
+	{
+     case GLFW_KEY_UP:
+		Offset.y += 0.01f;
+		break;
+	 case GLFW_KEY_DOWN:
+		 Offset.y -= 0.01f;
+		 break;
+	}
+}
+
+float TransformTriangle()
+{
+	float timeVal = glfwGetTime();
+	float movmentSpeed = 2.0f;
+	float movementAmplitude = 0.2f;
+	float offset = sin(timeVal * movmentSpeed) * movementAmplitude;
+	return offset;
 }
 
 
@@ -54,13 +72,14 @@ int main()
 		#version 330 core 
 		 layout(location = 0) in vec3 aPos; 
 		 layout(location = 1) in vec3 aColor;
-
+         
+         uniform vec2 uOffset;
          out vec3 ourColor;
 
          void main()
 		 {
 			 ourColor = aColor;
-			 gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+			 gl_Position = vec4(aPos.x, aPos.y + uOffset.y, aPos.z, 1.0);
 		 } 
     )";
 
@@ -84,9 +103,10 @@ int main()
 		#version 330 core 
 		out vec4 FragColor; 
 		in vec3 ourColor;
+        uniform vec4 uColor;
 		  void main()
 		 {
-			 FragColor = vec4(ourColor, 1.0);
+			 FragColor = vec4(ourColor, 1.0) * uColor;
 		 }
 	)";
 
@@ -137,8 +157,8 @@ int main()
 
 	// 3rd triangle (Center: Center 0.0)
 	 0.00f,  0.3f, 0.0f,  1.0f, 0.0f, 0.0f, // top
-	-0.15f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // left
-	 0.15f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // right
+	-0.15f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // left
+	 0.15f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, // right
 
 	 // 4th triangle (Mid Right: Center +0.35)
 	  0.35f,  0.3f, 0.0f,  1.0f, 1.0f, 0.0f, // top
@@ -188,6 +208,9 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	GLint uColorLoc = glGetUniformLocation(shadeprogram, "uColor");
+	GLint uOffestLoc = glGetUniformLocation(shadeprogram, "uOffset");
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
@@ -197,7 +220,22 @@ int main()
 		glUseProgram(shadeprogram);
 		glBindVertexArray(vao);
 
-		glDrawElements(GL_TRIANGLES, 15, GL_UNSIGNED_INT, 0);
+		glUniform4f(uColorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
+		glUniform2f(uOffestLoc, 0.0f, 0.0f);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+
+		glUniform4f(uColorLoc, 1.0f, 0.0f, 0.0f, 1.0f);
+		glUniform2f(uOffestLoc, 0.0f, 0.0f);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(6 * sizeof(unsigned int)));
+
+		glUniform4f(uColorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
+		glUniform2f(uOffestLoc, Offset.x, Offset.y);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(9 * sizeof(unsigned int)));
+
+
+		glUniform4f(uColorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
+		glUniform2f(uOffestLoc, 0.0f, TransformTriangle());
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(12 * sizeof(unsigned int)));
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

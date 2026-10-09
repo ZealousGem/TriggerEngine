@@ -16,13 +16,17 @@ Vec2 Offset;
 void keyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods)
 {
 	// Paste your keyboard processing code here
+	float MaxAmount = 0.2f;
+	float MovementSpeed = 2.0f;
 	switch (key)
 	{
      case GLFW_KEY_UP:
-		Offset.y += 0.01f;
+		Offset.y += 0.01f * MovementSpeed;
+		if (Offset.y > MaxAmount) Offset.y = MaxAmount;
 		break;
 	 case GLFW_KEY_DOWN:
-		 Offset.y -= 0.01f;
+		 Offset.y -= 0.01f * MovementSpeed;
+		 if (Offset.y < -MaxAmount) Offset.y = -MaxAmount;
 		 break;
 	}
 }
